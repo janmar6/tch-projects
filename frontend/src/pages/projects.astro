@@ -1,0 +1,72 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getProjects } from '../lib/content';
+
+const projects = await getProjects();
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`${SITE_TITLE} | Projects`} description={SITE_DESCRIPTION} />
+		<style>
+			.grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 1rem;
+			}
+			.card {
+				background: white;
+				padding: 1rem;
+				border-radius: 8px;
+				box-shadow: 0 2px 8px rgba(var(--black), 8%);
+			}
+			.card-link {
+				color: inherit;
+				text-decoration: none;
+			}
+			.card-link:hover h3 {
+				color: var(--accent);
+			}
+			.card h3 {
+				margin-top: 0;
+			}
+			.links {
+				display: flex;
+				gap: 1rem;
+			}
+			@media (max-width: 720px) {
+				.grid { grid-template-columns: 1fr; }
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>Projects</h1>
+			<p>Project items are loaded from PocketBase.</p>
+			{projects.length === 0 ? <p>No projects added yet.</p> : null}
+			<section class="grid">
+				{
+					projects.map((project) => (
+						<article class="card">
+							<a class="card-link" href={`/projects/${project.slug}`}>
+								{project.imageUrl ? <img src={project.imageUrl} alt={project.name} /> : null}
+								<h3>{project.name}</h3>
+								<p>{project.summary || 'No summary yet.'}</p>
+							</a>
+							<div class="links">
+								{project.liveUrl ? <a href={project.liveUrl}>Live</a> : null}
+								{project.repoUrl ? <a href={project.repoUrl}>Source</a> : null}
+							</div>
+						</article>
+					))
+				}
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

@@ -1,0 +1,42 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import ProjectImageCarousel from '../../components/ProjectImageCarousel.astro';
+import { SITE_TITLE } from '../../consts';
+import { getProjectBySlug } from '../../lib/content';
+
+const slug = Astro.params.slug || '';
+const project = await getProjectBySlug(slug);
+
+if (!project) {
+	return Astro.redirect('/projects');
+}
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`${SITE_TITLE} | ${project.name}`} description={project.summary || project.name} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<article>
+				<h1>{project.name}</h1>
+				<!-- Wrapper: full-bleed math must be relative to main, not article (avoids right-shift / overflow) -->
+				<div class="project-media-bleed">
+					<ProjectImageCarousel images={project.imageUrls} alt={project.name} />
+				</div>
+				<p>{project.summary}</p>
+				<div set:html={project.description || ''} />
+				<p>
+					{project.liveUrl ? <a href={project.liveUrl}>Live project</a> : null}
+					{project.liveUrl && project.repoUrl ? ' | ' : null}
+					{project.repoUrl ? <a href={project.repoUrl}>Source code</a> : null}
+				</p>
+			</article>
+		</main>
+		<Footer />
+	</body>
+</html>

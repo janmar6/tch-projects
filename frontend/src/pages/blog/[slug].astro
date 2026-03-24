@@ -1,0 +1,32 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { getPostBySlug } from '../../lib/content';
+
+const slug = Astro.params.slug || '';
+const post = await getPostBySlug(slug);
+
+if (!post) {
+	return Astro.redirect('/blog');
+}
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={post.title} description={post.excerpt || post.title} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<article>
+				<h1>{post.title}</h1>
+				{post.coverImageUrl ? <img src={post.coverImageUrl} alt={post.title} /> : null}
+				<p>{post.excerpt}</p>
+				<div set:html={post.content || ''} />
+			</article>
+		</main>
+		<Footer />
+	</body>
+</html>

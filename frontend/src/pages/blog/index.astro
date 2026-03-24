@@ -1,0 +1,63 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import { getPosts } from '../../lib/content';
+
+const posts = await getPosts();
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+			main {
+				max-width: 920px;
+			}
+			.post-list {
+				list-style: none;
+				padding: 0;
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 1rem;
+			}
+			.post-card {
+				background: white;
+				padding: 1rem;
+				border-radius: 8px;
+				box-shadow: 0 2px 8px rgba(var(--black), 8%);
+			}
+			.post-card h3 {
+				margin-top: 0;
+			}
+			@media (max-width: 720px) {
+				.post-list { grid-template-columns: 1fr; }
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>Blog</h1>
+			<p>Posts are loaded from PocketBase.</p>
+			{posts.length === 0 ? <p>No published posts yet.</p> : null}
+			<section>
+				<ul class="post-list">
+					{
+						posts.map((post) => (
+							<li class="post-card">
+								<a href={`/blog/${post.slug}`}>
+									<h3>{post.title}</h3>
+									<p>{post.excerpt || 'No excerpt provided.'}</p>
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
