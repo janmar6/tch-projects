@@ -1,0 +1,27 @@
+services:
+  pocketbase:
+    image: docker.io/spectado/pocketbase:latest
+    container_name: pocketbase
+    command: ["--http=0.0.0.0:8090", "--https="]
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./pocketbase/pb_data:/pb_data
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: portfolio-web
+    environment:
+      SITE_URL: ${SITE_URL:-http://localhost:4321}
+      POCKETBASE_URL: ${POCKETBASE_URL:-http://pocketbase:8090}
+      PUBLIC_POCKETBASE_URL: ${PUBLIC_POCKETBASE_URL:-http://localhost:8090}
+      HOST: 0.0.0.0
+      PORT: 4321
+    ports:
+      - "4321:4321"
+    depends_on:
+      - pocketbase
+    restart: unless-stopped
